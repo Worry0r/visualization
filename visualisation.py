@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.widgets import Button
 
 # Read the JSON file
-with open('heroes.json') as f:
+with open("heroes.json") as f:
     data = json.load(f)
 
 # Extract all ticks and their hero positions
@@ -22,7 +22,7 @@ for tick in ticks:
         if hero_name not in hero_positions:
             hero_positions[hero_name] = []
         hero_positions[hero_name].append((float(tick), x, y))
-        
+
 all_x = [pos[1] for positions in hero_positions.values() for pos in positions]
 all_y = [pos[2] for positions in hero_positions.values() for pos in positions]
 
@@ -42,14 +42,20 @@ ax.set_xlim(x_min - 100, x_max + 100)
 ax.set_ylim(y_min - 100, y_max + 100)
 
 # Create a text object for current tick display
-tick_text = ax.text(0.02, 0.95, "Current Tick: 0", transform=ax.transAxes, 
-                   fontsize=14, fontweight='bold', 
-                   bbox=dict(facecolor='white', alpha=0.8, boxstyle='round'))
+tick_text = ax.text(
+    0.02,
+    0.95,
+    "Current Tick: 0",
+    transform=ax.transAxes,
+    fontsize=14,
+    fontweight="bold",
+    bbox=dict(facecolor="white", alpha=0.8, boxstyle="round"),
+)
 
 # Initialize lines for each hero
 lines = {}
 for hero_name in hero_positions:
-    line, = ax.plot([], [], 'o', markersize=8, label=hero_name)
+    (line,) = ax.plot([], [], "o", markersize=8, label=hero_name)
     lines[hero_name] = line
 
 
@@ -61,54 +67,57 @@ def animate(frame_number):
     """
     # Update the tick text
     tick_text.set_text(f"Current Tick: {frame_number}")
-    
+
     # Update each hero's position data
     for hero_name, hero_line in lines.items():
         # Get all recorded positions for this hero
         hero_data = hero_positions[hero_name]
-        
+
         # Make sure we have data for this frame
         if frame_number < len(hero_data):
             # Extract only the current position (not the history)
             current_x = [hero_data[frame_number][1]]  # Just the x at current frame
             current_y = [hero_data[frame_number][2]]  # Just the y at current frame
-            
+
             # Update the line data with new coordinates
             hero_line.set_data(current_x, current_y)
         else:
             # If no data for this frame, show nothing
             hero_line.set_data([], [])
-    
+
     # Return all updated lines and the tick text
     return tuple(lines.values()) + (tick_text,)
+
 
 # Animation settings
 frames_count = len(hero_positions[next(iter(hero_positions.keys()))])
 ani = FuncAnimation(
-    fig, 
-    animate, 
+    fig,
+    animate,
     frames=frames_count,
     interval=100,  # Fast animation (10ms per frame)
     repeat=True,
-    blit=True
+    blit=True,
 )
 
 # Add buttons for playback control
 ax_playpause = plt.axes([0.45, 0.02, 0.1, 0.04])
-btn_playpause = Button(ax_playpause, 'Pause')
+btn_playpause = Button(ax_playpause, "Pause")
 
 is_playing = True
+
 
 def toggle_play(event):
     global is_playing
     if is_playing:
         ani.event_source.stop()
-        btn_playpause.label.set_text('Play')
+        btn_playpause.label.set_text("Play")
     else:
         ani.event_source.start()
-        btn_playpause.label.set_text('Pause')
+        btn_playpause.label.set_text("Pause")
     is_playing = not is_playing
     plt.draw()
+
 
 btn_playpause.on_clicked(toggle_play)
 
