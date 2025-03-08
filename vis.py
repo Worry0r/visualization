@@ -1,20 +1,23 @@
 import json
 import matplotlib
 
-matplotlib.use("TkAgg")
+matplotlib.use("TkAgg")  # Or 'Qt5Agg', 'WXAgg',
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
 from matplotlib.widgets import Button, Slider
+from PIL import Image
 
 
 def load_data(filepath):
     try:
-        with open(filepath) as f:
-            data = json.load(f)
-        return data
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error loading JSON file: {e}")
+        with open(filepath, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print(f"File {filepath} not found!")
+        return None
+    except json.JSONDecodeError:
+        print(f"Failed to decode JSON from file {filepath}")
         return None
 
 
@@ -43,7 +46,7 @@ def process_hero_data(data):
                     x, y = position.get("x", 0), position.get("y", 0)
                     last_positions[hero_name] = (x, y)
                 else:
-                    x, y = last_positions.get(hero_name, (0, 0))
+                    x, y = last_positions.get(hero_name, (8000, 8000))
 
                 hero_positions.setdefault(hero_name, []).append((tick, x, y))
 
@@ -58,7 +61,7 @@ def process_building_data(data):
             for building_id, building_data in buildings.items():
                 position = building_data.get("position")
                 team = building_data.get("teamNum", 0)
-                color = "blue" if team == 2 else "red" if team == 3 else "darkgreen"
+                color = "blue" if team == 2 else "red" if team == 3 else "orange"
 
                 if position:
                     x, y = position.get("x", 0), position.get("y", 0)
@@ -90,7 +93,7 @@ def process_creep_data(data):
                         if team == 2
                         else "magenta"
                         if team == 3
-                        else "darkgreen"
+                        else "orange"
                     )
                     creep_colors[creep_id] = color
 
@@ -108,6 +111,7 @@ def setup_plot(
     hero_colors,
     creep_positions,
     creep_colors,
+    background_image_path="Game_map_7.33.webp",
 ):
     all_coords = (
         [(x, y) for positions in hero_positions.values() for _, x, y in positions]
@@ -134,6 +138,13 @@ def setup_plot(
 
     fig, ax = plt.subplots(figsize=(9, 9))
     plt.subplots_adjust(bottom=0.15)
+    if background_image_path:
+        img = Image.open(background_image_path)
+        ax.imshow(
+            img,
+            extent=[x_min - 1500, x_max + 1500, y_min - 1000, y_max + 1600],
+            aspect="auto",
+        )
     ax.set_xlim(x_min - 100, x_max + 100)
     ax.set_ylim(y_min - 100, y_max + 100)
     ax.set_xlabel("X Position")
@@ -164,7 +175,7 @@ def setup_plot(
 
     tick_text = ax.text(
         0.02,
-        0.95,
+        0.02,
         "Current Tick: 0",
         transform=ax.transAxes,
         fontsize=14,
@@ -238,6 +249,7 @@ def main():
         hero_colors,
         creep_positions,
         creep_colors,
+        background_image_path="Game_map_7.33.webp",
     )
 
     frames_count = max(len(p) for p in hero_positions.values())
