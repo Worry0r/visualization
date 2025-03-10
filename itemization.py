@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 import re
 
-
+#saves itemization into txt and json files
 def load_data(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -55,14 +55,7 @@ def list_player_items(
             )
         formatted_output += " ".join(item_strings) + "\n"
 
-    #        item_list = [
-    #            f"\n min {minute} > {', '.join(item_names)}"
-    #            for minute, item_names in grouped_items.items()
-    #        ]
-    #        output.append(f"{hero}: " + " | ".join(item_list))
-
-    #    formatted_output = "\n\n".join(output)
-    print(formatted_output)
+#    print(formatted_output)
 
     with open(output_txt, "w") as f:
         f.write(formatted_output)

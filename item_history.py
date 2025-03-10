@@ -1,6 +1,7 @@
 import json
 
 
+# file saves results into json file
 def load_data(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
