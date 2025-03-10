@@ -19,7 +19,9 @@ def clean_item_name(item_name):
     return re.sub(r"CDOTA_Item_|(\(\d+\).*)", "", item_name)
 
 
-def list_player_items(data, output_txt="itemization.txt", output_json="itemization.json"):
+def list_player_items(
+    data, output_txt="itemization.txt", output_json="itemization.json"
+):
     hero_items = defaultdict(list)
 
     for hero_data in data.values():
@@ -47,17 +49,19 @@ def list_player_items(data, output_txt="itemization.txt", output_json="itemizati
     for hero_data in output:
         formatted_output += f"\n {hero_data['hero']}: "
         item_strings = []
-        for item_info in hero_data['items']:
-            item_strings.append(f"\n min {item_info['minute']} > {', '.join(item_info['items'])}")
+        for item_info in hero_data["items"]:
+            item_strings.append(
+                f"\n min {item_info['minute']} > {', '.join(item_info['items'])}"
+            )
         formatted_output += " ".join(item_strings) + "\n"
 
-#        item_list = [
-#            f"\n min {minute} > {', '.join(item_names)}"
-#            for minute, item_names in grouped_items.items()
-#        ]
-#        output.append(f"{hero}: " + " | ".join(item_list))
+    #        item_list = [
+    #            f"\n min {minute} > {', '.join(item_names)}"
+    #            for minute, item_names in grouped_items.items()
+    #        ]
+    #        output.append(f"{hero}: " + " | ".join(item_list))
 
-#    formatted_output = "\n\n".join(output)
+    #    formatted_output = "\n\n".join(output)
     print(formatted_output)
 
     with open(output_txt, "w") as f:
