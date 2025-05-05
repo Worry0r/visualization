@@ -234,7 +234,7 @@ def animate(
 
 
 def main():
-    data = load_data("8188745568_1293535117_combined_log.json")
+    data = load_data("dummy_data.json")
     if not data:
         return
 
